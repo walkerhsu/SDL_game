@@ -2,12 +2,13 @@
 
 int main( int argc, char* args[] ) {
     //create game window
-    Game01 gm01 = Game01(800, 600);
+    
+    Game01 gm01 = Game01(500, 500);
     
     //load background image
-    bool drawBG  = false;
+    bool drawBG  = true;
     if (drawBG) {
-        char path[] = "data/tiger.jpg";
+        char path[] = "data/background.jpg";
         if( !gm01.loadBgTexture(path) ) {
             printf("Warning, failed to load background image!\n" );
         }
@@ -17,3 +18,8 @@ int main( int argc, char* args[] ) {
     gm01.mainLoop();
     return 0;
 }
+/*bugs :
+1:player can't move smoothly
+2:player can't move at the lowest level
+3:ghost will move in an endless loop
+*/

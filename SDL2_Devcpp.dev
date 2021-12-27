@@ -160,8 +160,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
-FileName=basic_infos.hpp
+[Unit13]
+FileName=objectbase.hpp
 CompileCpp=1
 Folder=
 Compile=1
@@ -170,8 +170,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
-FileName=basic_infos.cpp
+[Unit12]
+FileName=objectbase.cpp
 CompileCpp=1
 Folder=
 Compile=1

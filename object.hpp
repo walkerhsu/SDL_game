@@ -1,5 +1,5 @@
-#ifndef objectbase_hpp
-#define objectbase_hpp
+#ifndef object_hpp
+#define object_hpp
 
 #include <stdio.h>
 #include "mainwin.hpp"
@@ -17,9 +17,9 @@ public:
     bool flip;
     double angle;
     SDL_Rect dstRect;
-	SDL_Rect srcRect; 
+
     bool loadTexture(char path[]);
-    void renderTexture(SDL_Rect* dstRect, SDL_Rect* srcRect, double angle);
+    void renderTexture(SDL_Rect* dstRect, double angle);
 	virtual void render();
 	
 };

@@ -8,19 +8,26 @@
 #include <vector>
 #include <iomanip>
 #include <cstdlib>
+#include "mainwin.hpp"
+#include "objectbase.hpp"
 using namespace std;
 
-class MazeMap{
+class MazeMap: public ObjectBase {
 public:
     // constructor
-    MazeMap();
-    
+    MazeMap(MainWin* );
     // destructor
     ~MazeMap();
-    
-    vector<vector<int> > matrix;
-
     void loadMap(char path[]);  // csv file
-    void dumpMap();
+    void render();
+    void drawTexture(int , int , int);
+	int playerStartPosX;
+	int playerStartPosY;
+	int ghostStartPosX;
+	int ghostStartPosY;
+    vector< vector<int> > getMap();
+private:
+	void dumpMap();
+	vector< vector<int> > map;
 };
 #endif

@@ -20,9 +20,11 @@ bool ObjectBase::loadTexture(char path[]) {
     return pTexture == NULL ? false: true;
 }
 
-void ObjectBase::renderTexture(SDL_Rect* dstRect, double angle){
+void ObjectBase::renderTexture(SDL_Rect* dstRect, SDL_Rect* srcRect, double angle){
     if (hWin) {
-        hWin->renderTexture(pTexture, dstRect, angle);
+    	if(flip) hWin->renderTexture(pTexture, srcRect, dstRect, angle, SDL_FLIP_HORIZONTAL);
+        else hWin->renderTexture(pTexture, srcRect, dstRect, angle, SDL_FLIP_NONE);
+        flip=false;
     }
 }
 

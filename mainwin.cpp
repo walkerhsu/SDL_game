@@ -6,10 +6,12 @@ mRenderer(NULL),
 bgTexture(NULL){
     nWidth  = width;
     nHeight = height;
-    nBorder = 2;
+    nBorder = 0;
     viewWidth  = width - nBorder*2;
     viewHeight = height - nBorder*2;
-    init();
+    unitWidth = 0;
+    unitHeight = 0;
+	init();
 }
 
 MainWin::~MainWin() {
@@ -98,9 +100,10 @@ bool MainWin::loadBgTexture(char path[]) {
     return bgTexture == NULL ? false : true ;
 }
 
-void MainWin::renderTexture(SDL_Texture* texture, SDL_Rect* dstRect, float angle, SDL_RendererFlip flip) {
+void MainWin::renderTexture(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* dstRect, float angle, SDL_RendererFlip flip) {
     if (texture != NULL) {
-        SDL_RenderCopyEx(mRenderer, texture, NULL, dstRect, angle, NULL, flip);
+        SDL_RenderCopyEx(mRenderer, texture, srcRect, dstRect, angle, NULL, flip);
+        //SDL_RenderCopy(mRenderer,texture,srcRect,dstRect);
     }
 }
 
@@ -114,9 +117,13 @@ void MainWin::mainLoop(){
             //User requests quit
             if( e.type == SDL_QUIT ) {
                 quit = true;
-            } else if( e.type == SDL_KEYDOWN ) {
+            } 
+			else if( e.type == SDL_KEYDOWN ) {
                 quit = handleKeyEvent(e);
             }
+            else if(e.type==SDL_KEYUP){
+            	quit=handleKeyEvent(e);
+			}
         }
        
         //clear screen as black
@@ -153,16 +160,16 @@ bool MainWin::handleKeyEvent(SDL_Event e) {
     switch( e.key.keysym.sym )
     {
         case SDLK_UP:
-            onKeyUp();
+            onKeyUp(e);
             break;
         case SDLK_DOWN:
-            onKeyDown();
+            onKeyDown(e);
             break;
         case SDLK_LEFT:
-            onKeyLeft();
+            onKeyLeft(e);
             break;
         case SDLK_RIGHT:
-            onKeyRight();
+            onKeyRight(e);
             break;
         case SDLK_SPACE:
             onKeySpace();
@@ -171,7 +178,7 @@ bool MainWin::handleKeyEvent(SDL_Event e) {
             quit = true;
             break;
         default:
-            onKeyCustom(e);
+            onKeyEmpty(e);
             break;
     }
     return quit;
@@ -182,17 +189,20 @@ void MainWin::onRender(){
     printf("override onRender() to custom the rendering\n");
 }
 
-void MainWin::onKeyDown() {
+void MainWin::onKeyDown(SDL_Event e) {
     printf("Undefined, need to override onKeyDown()\n");
 }
-void MainWin::onKeyUp(){
+void MainWin::onKeyUp(SDL_Event e){
     printf("Undefined, need to override onKeyUp()\n");
 }
-void MainWin::onKeyLeft(){
+void MainWin::onKeyLeft(SDL_Event e){
     printf("Undefined, need to override onKeyLeft()\n");
 }
-void MainWin::onKeyRight(){
+void MainWin::onKeyRight(SDL_Event e){
     printf("Undefined, need to override onKeyRight()\n");
+}
+void MainWin::onKeyEmpty(SDL_Event e){
+	printf("Undefined, need to override onKeyEmpty()\n");
 }
 void MainWin::onKeySpace(){
     printf("Undefined, need to override onKeySpace()\n");
