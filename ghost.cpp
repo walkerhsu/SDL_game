@@ -1,7 +1,10 @@
 #include "ghost.hpp"
-#include<ctime>
-#include<cstdlib>
-#include<vector>
+#include <ctime>
+#include <cstdlib>
+#include <vector>
+#include <cstdlib>
+#include <iostream>
+using namespace std;
 Ghost::Ghost(MainWin* handle , int startX , int startY):
 ObjectBase(handle){
     //Todo
@@ -9,6 +12,8 @@ ObjectBase(handle){
 	pos_y=startY*hWin->unitHeight;
     frame=0;
     left=0;
+    ghost_v=2;
+    u=false,d=false,l=true,r=false;
     //seed=srand(time(0));
    // moverandom=rand();
 }
@@ -32,22 +37,22 @@ int Ghost::getH(){
 }
 bool Ghost::checkcollide(int x,int y,char c){
 	if(c=='u'){
-		if(y-2>=0&&mazeMap[(y-2)/(hWin->unitHeight)][x/(hWin->unitWidth)]!=0&&mazeMap[(y-2)/(hWin->unitHeight)][(x+dstRect.w)/(hWin->unitWidth)]!=0){
+		if(y-ghost_v>0&&mazeMap[(y-ghost_v)/(hWin->unitHeight)][(x+2)/(hWin->unitWidth)]!=0&&mazeMap[(y-ghost_v)/(hWin->unitHeight)][(x+dstRect.w-2)/(hWin->unitWidth)]!=0){
 			return true;
 		}
 	}
 	if(c=='d'){
-		if(y+2+dstRect.h<=(hWin->nHeight)&&mazeMap[(y+dstRect.h+2)/(hWin->unitHeight)][(x+dstRect.w)/(hWin->unitWidth)]!=0&&mazeMap[(y+dstRect.h+2)/(hWin->unitHeight)][x/(hWin->unitWidth)]!=0){
+		if(y+ghost_v+dstRect.h<(hWin->nHeight)&&mazeMap[(y+dstRect.h+ghost_v)/(hWin->unitHeight)][(x+dstRect.w-5)/(hWin->unitWidth)]!=0&&mazeMap[(y+dstRect.h+ghost_v)/(hWin->unitHeight)][(x+5)/(hWin->unitWidth)]!=0){
 			return true;
 		}
 	}
 	if(c=='l'){
-		if(x-2>=0&&mazeMap[y/(hWin->unitHeight)][(x-2)/(hWin->unitWidth)]!=0&&mazeMap[(y+dstRect.h)/(hWin->unitHeight)][(x-2)/(hWin->unitWidth)]!=0){
+		if(x-ghost_v>0&&mazeMap[(y+2)/(hWin->unitHeight)][(x-ghost_v+1)/(hWin->unitWidth)]!=0&&mazeMap[(y+dstRect.h-2)/(hWin->unitHeight)][(x-ghost_v)/(hWin->unitWidth)]!=0){
 			return true;
 		}
 	}
 	if(c=='r'){
-		if(x+2+dstRect.w<=(hWin->nWidth)&&mazeMap[(y+dstRect.h)/(hWin->unitHeight)][(x+2+dstRect.w)/(hWin->unitWidth)]!=0&&mazeMap[y/(hWin->unitHeight)][(x+2+dstRect.w)/(hWin->unitWidth)]!=0){
+		if(x+ghost_v+dstRect.w<(hWin->nWidth)&&mazeMap[(y+dstRect.h-2)/(hWin->unitHeight)][(x+ghost_v+dstRect.w)/(hWin->unitWidth)]!=0&&mazeMap[(y+2)/(hWin->unitHeight)][(x+ghost_v+dstRect.w)/(hWin->unitWidth)]!=0){
 			return true;
 		}
 	}
@@ -55,10 +60,13 @@ bool Ghost::checkcollide(int x,int y,char c){
 }
 
 void Ghost::handleEvent(int x,int y){
-	bool move;
-	static bool u=false,d=false,l=true,r=false;
-	move=false;
-	
+	bool move=false;
+	int ran=rand();
+	char c;
+	if(ran%2==0){
+		c='u';
+	}
+	else c='d';
 	if(l==true){
 		if(checkcollide(pos_x,pos_y,'l')){
 			pos_x-=2;
@@ -67,30 +75,57 @@ void Ghost::handleEvent(int x,int y){
 			r=false;
 			left=1;
 		}
-		else if(checkcollide(pos_x,pos_y,'u')){
-			pos_y-=2;
-			u=true;
-			d=false;
-			r=false;
-			l=false;
-		}
-		else if(checkcollide(pos_x,pos_y,'d')){
-			pos_y+=2;
-			d=true;
-			u=false;
-			r=false;
-			l=false;
-		}
-		else if(checkcollide(pos_x,pos_y,'r')){
-			pos_x+=2;
-			r=true;
-			l=false;
-			u=false;
-			d=false;
-			left=0;
+		else{
+			if(c=='u'){
+				if(checkcollide(pos_x,pos_y,'u')){
+					pos_y-=2;
+					u=true;
+					d=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'d')){
+					pos_y+=2;
+					d=true;
+					u=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'r')){
+					pos_x+=2;
+					r=true;
+					l=false;
+					u=false;
+					d=false;
+					left=0;
+				}
+			}
+			else if(c=='d'){
+				if(checkcollide(pos_x,pos_y,'d')){
+					pos_y+=2;
+					d=true;
+					u=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'u')){
+					pos_y-=2;
+					u=true;
+					d=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'r')){
+					pos_x+=2;
+					r=true;
+					l=false;
+					u=false;
+					d=false;
+					left=0;
+				}
+			}
 		}
 	}
-	
 	else if(r==true){
 		if(checkcollide(pos_x,pos_y,'r')){
 			pos_x+=2;
@@ -99,60 +134,120 @@ void Ghost::handleEvent(int x,int y){
 			l=false;
 			left=0;
 		}
-		else if(checkcollide(pos_x,pos_y,'d')){
-			pos_y+=2;
-			d=true;
-			u=false;
-			r=false;
-			l=false;
-		}
-		else if(checkcollide(pos_x,pos_y,'u')){
-			pos_y-=2;
-			u=true;
-			d=false;
-			r=false;
-			l=false;
-		}
-		else if(checkcollide(pos_x,pos_y,'l')){
-			pos_x-=2;
-			l=true;
-			r=false;
-			u=false;
-			d=false;
-			left=1;
+		else{
+			if(c=='u'){
+				if(checkcollide(pos_x,pos_y,'u')){
+					pos_y-=2;
+					u=true;
+					d=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'d')){
+					pos_y+=2;
+					d=true;
+					u=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'l')){
+					pos_x-=2;
+					l=true;
+					r=false;
+					u=false;
+					d=false;
+					left=1;
+				}
+			}
+			else if(c=='d'){
+				if(checkcollide(pos_x,pos_y,'d')){
+					pos_y+=2;
+					d=true;
+					u=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'u')){
+					pos_y-=2;
+					u=true;
+					d=false;
+					r=false;
+					l=false;
+				}
+				else if(checkcollide(pos_x,pos_y,'l')){
+					pos_x-=2;
+					l=true;
+					r=false;
+					u=false;
+					d=false;
+					left=1;
+				}
+			}
 		}
 	}	
-			
-	else if((u==true)){
+	if(ran%2==0) c='l';	
+	else c='r';
+	
+	if((u==true)){
 		if(checkcollide(pos_x,pos_y,'u')){
 			pos_y-=2;
 			l=false;
 			d=false;
 			r=false;
 		}
-		else if(checkcollide(pos_x,pos_y,'r')){
-			pos_x+=2;
-			r=true;
-			u=false;
-			d=false;
-			l=false;
-			left=0;
+		else {
+			if(c=='r') {
+				if(checkcollide(pos_x,pos_y,'r')){
+					pos_x+=2;
+					r=true;
+					u=false;
+					d=false;
+					l=false;
+					left=0;
+				}
+				else if(checkcollide(pos_x,pos_y,'l')){
+					pos_x-=2;
+					l=true;
+					u=false;
+					d=false;
+					r=false;
+					left=1;
+				} 
+				else if(checkcollide(pos_x,pos_y,'d')){
+					pos_y+=2;
+					d=true;
+					u=false;
+					r=false;
+					l=false;
+				}
+			}
+			else if(c=='l') {
+				if(checkcollide(pos_x,pos_y,'l')){
+					pos_x-=2;
+					r=false;
+					u=false;
+					d=false;
+					l=true;
+					left=1;
+				}
+				else if(checkcollide(pos_x,pos_y,'r')){
+					pos_x+=2;
+					r=true;
+					u=false;
+					d=false;
+					l=false;
+					left=0;
+				} 
+				else if(checkcollide(pos_x,pos_y,'d')){
+					pos_y+=2;
+					d=true;
+					u=false;
+					r=false;
+					l=false;
+				}
+			}
 		}
-		else if(checkcollide(pos_x,pos_y,'l')){
-				pos_x-=2;
-				l=true;
-				u=false;
-				d=false;
-				r=false;
-				left=1;
-		} 
-		else if(checkcollide(pos_x,pos_y,'d')){
-			pos_y+=2;
-			d=true;
-			u=false;
-			r=false;
-			l=false;
-		}
+		
 	}
 	else if((d==true)){
 		if(checkcollide(pos_x,pos_y,'d')){
@@ -161,51 +256,69 @@ void Ghost::handleEvent(int x,int y){
 			l=false;
 			r=false;
 		}
-		else if(checkcollide(pos_x,pos_y,'l')){
-			pos_x-=2;
-			l=true;
-			u=false;
-			d=false;
-			r=false;
-			left=1;
-		} 
-		else if(checkcollide(pos_x,pos_y,'r')){
-			pos_x+=2;
-			r=true;
-			u=false;
-			d=false;
-			l=false;
-			left=0;
+		else if(c=='r') {
+			if(checkcollide(pos_x,pos_y,'r')){
+				pos_x+=2;
+				r=true;
+				u=false;
+				d=false;
+				l=false;
+				left=0;
+			}
+			else if(checkcollide(pos_x,pos_y,'l')){
+					pos_x-=2;
+					l=true;
+					u=false;
+					d=false;
+					r=false;
+					left=1;
+			} 
+			else if(checkcollide(pos_x,pos_y,'u')){
+				pos_y-=2;
+				u=true;
+				d=false;
+				r=false;
+				l=false;
+			}
 		}
-		else if(checkcollide(pos_x,pos_y,'u')){
-			pos_y-=2;
-			u=true;
-			d=false;
-			r=false;
-			l=false;
+		else if(c=='l') {
+			if(checkcollide(pos_x,pos_y,'l')){
+				pos_x-=2;
+				r=false;
+				u=false;
+				d=false;
+				l=true;
+				left=1;
+			}
+			else if(checkcollide(pos_x,pos_y,'r')){
+				pos_x+=2;
+				l=true;
+				u=false;
+				d=false;
+				r=false;
+				left=1;
+			} 
+			else if(checkcollide(pos_x,pos_y,'u')){
+				pos_y-=2;
+				u=true;
+				d=false;
+				r=false;
+				l=false;
+			}
 		}
 	}
 }
 void Ghost::render() {
 	//Todo
-	const int FPS=60;
-	const int frameDelay=1000/FPS;
-	Uint32 frameStart;
-	int frameTime;
-	frameStart=SDL_GetTicks();
 	
-    dstRect.w = hWin->unitWidth;
-    dstRect.h = hWin->unitHeight;
+    dstRect.w = hWin->unitWidth-1;
+    dstRect.h = hWin->unitHeight-1;
     dstRect.x = pos_x;
     dstRect.y = pos_y;
     //printf("ghost : %d , %d\n" , pos_x,pos_y);
     srcRect=*SpriteRect();
     renderTexture(&dstRect, &srcRect, angle);
     
-    frameTime=SDL_GetTicks()-frameStart;
-	if(frameDelay>frameTime){
-		SDL_Delay(frameDelay-frameTime);
-	}
 }
 SDL_Rect* Ghost::SpriteRect(){
 	spriteRect[0].w=142;

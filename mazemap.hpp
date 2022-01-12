@@ -11,6 +11,17 @@
 #include "mainwin.hpp"
 #include "objectbase.hpp"
 using namespace std;
+enum MapValue{
+	block,
+	speedup,
+	speeddown,
+	shuriken,
+	trap,
+	shield,
+	count,
+	portal,
+	value_total
+};
 
 class MazeMap: public ObjectBase {
 public:
@@ -20,14 +31,23 @@ public:
     ~MazeMap();
     void loadMap(char path[]);  // csv file
     void render();
-    void drawTexture(int , int , int);
-	int playerStartPosX;
-	int playerStartPosY;
-	int ghostStartPosX;
-	int ghostStartPosY;
-    vector< vector<int> > getMap();
+
+	vector < int > ghostStartPosX, ghostStartPosY;
+	vector< vector<int> > getMap();
+    bool loadTexture(char[] , int );
+    void changeMap(int , int );
+    
+    int playerStartPosX, playerStartPosY;
+
 private:
-	void dumpMap();
 	vector< vector<int> > map;
+	
+	void dumpMap();
+	void drawTexture(int , int , int);
+	void renderTexture(SDL_Texture* pTextures, SDL_Rect* dstRect, SDL_Rect* srcRect, double angle);
+	SDL_Rect* spriteRect(int i);
+	
+	SDL_Texture** pTextures;
+    SDL_Rect SpriteRect[28];
 };
 #endif

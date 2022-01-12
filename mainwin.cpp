@@ -1,14 +1,15 @@
 #include "mainwin.hpp"
-
+#include <iostream>
+Result result = NONE;
 MainWin::MainWin(int width, int height):
 mWindow(NULL),
 mRenderer(NULL),
 bgTexture(NULL){
-    nWidth  = width;
-    nHeight = height;
+    nWidth  = 720;
+    nHeight = 720;
     nBorder = 0;
-    viewWidth  = width - nBorder*2;
-    viewHeight = height - nBorder*2;
+    viewWidth  = width;
+    viewHeight = height;
     unitWidth = 0;
     unitHeight = 0;
 	init();
@@ -21,6 +22,16 @@ MainWin::~MainWin() {
 bool MainWin::init() {
     //Initialization flag
     bool success = true;
+    if(SDL_Init(SDL_INIT_AUDIO)==-1) {
+	    printf("SDL_Init: %s\n", SDL_GetError());
+	}
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+    {
+        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+    
+    gMusic=Mix_LoadMUS( "data/startpage.mp3" );
+    if(!gMusic) cout<<"false"<<endl;
     
     //Initialize SDL
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
@@ -31,8 +42,8 @@ bool MainWin::init() {
         mWindow = SDL_CreateWindow("Main Window",
                                    SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED,
-                                   nWidth,
-                                   nHeight,
+                                   viewWidth,
+                                   viewHeight,
                                    SDL_WINDOW_SHOWN );
         if( mWindow == NULL ) {
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
@@ -111,32 +122,146 @@ void MainWin::mainLoop(){
     //Event handler
     bool quit = false;
     SDL_Event e;
+    State state = START;
+    SDL_Texture** mTexture = new SDL_Texture*[2];
+    char path[] = "data/pagestart.png";
+    mTexture[0] = loadTexture(path);
+    char path1[] = "data/pageend.png";
+    mTexture[1] = loadTexture(path1);
     while( !quit ) {
         //Handle events on queue
-        while( SDL_PollEvent( &e ) != 0 ) {
-            //User requests quit
-            if( e.type == SDL_QUIT ) {
-                quit = true;
-            } 
-			else if( e.type == SDL_KEYDOWN ) {
-                quit = handleKeyEvent(e);
-            }
-            else if(e.type==SDL_KEYUP){
-            	quit=handleKeyEvent(e);
-			}
-        }
-       
-        //clear screen as black
-        SDL_SetRenderDrawColor( mRenderer, 0x00, 0x00, 0x00, 0xFF );
-        SDL_RenderClear( mRenderer );
-        drawBGFrame();
-        
-        //custom rendering
-        onRender();
-        
-        //update screen
-        SDL_RenderPresent( mRenderer );
-    }
+       switch(state){ 
+	    	case START:
+				if(Mix_PausedMusic()==1){
+					Mix_ResumeMusic();
+				}
+		    	srcRect = *spriteRect(0);
+				renderTexture(mTexture[0], &srcRect, NULL);
+				SDL_RenderPresent( mRenderer );
+		        SDL_SetRenderDrawColor( mRenderer, 0x00, 0x00, 0x00, 0xFF );
+			    SDL_RenderClear( mRenderer );
+			    
+			    
+		        while( SDL_PollEvent( &e ) != 0 ) {
+		            //User requests quit
+		            if( e.type == SDL_QUIT ) {
+		                quit = true;
+		            }
+					else if( e.type == SDL_KEYDOWN ) {
+						if(e.key.keysym.sym == SDLK_ESCAPE){
+							quit = true;
+						}
+						else if(e.key.keysym.sym == SDLK_0){
+                			state = GAME;
+                			loadData(1); 
+						}
+		                else if(e.key.keysym.sym == SDLK_1){
+                			state = GAME;
+                			loadData(2); 
+						}
+						else if(e.key.keysym.sym == SDLK_2){
+							state = GAME;
+                			loadData(3); 
+						}
+						else if(e.key.keysym.sym == SDLK_3){
+							state = GAME;
+                			loadData(4); 
+						}
+						else if(e.key.keysym.sym == SDLK_4){
+							state = GAME;
+                			loadData(5); 
+						}
+		            }
+		    	}
+				break;
+				
+	    	case GAME:
+	    		if(Mix_PausedMusic()==1){
+					Mix_ResumeMusic();
+				}
+		        //Handle events on queue
+		        while( SDL_PollEvent( &e ) != 0 ) {
+		            //User requests quit
+		            if( e.type == SDL_QUIT ) {
+		                quit = true;
+		            } 
+					else if( e.type == SDL_KEYDOWN ) {
+						if(e.key.keysym.sym == SDLK_r) {
+							state = START;
+						}
+		                quit = handleKeyEvent(e);
+		            }
+		            else if(e.type==SDL_KEYUP){
+		            	quit = handleKeyEvent(e);
+					}
+		        }
+		        //clear screen as black
+		        SDL_SetRenderDrawColor( mRenderer, 0x00, 0x00, 0x00, 0xFF );
+			    SDL_RenderClear( mRenderer );
+		        if(!quit) {
+			        drawBGFrame();
+			        quit = onRender();
+			        if(quit){
+			        	state = END;
+			        	quit = false;
+					}
+			        
+			        //update screen
+			        SDL_RenderPresent( mRenderer );
+				
+				}
+				break;
+			
+			case END:
+				Mix_PauseMusic();
+				if(result==WIN){
+					srcRect = *spriteRect(1);
+				}
+				if(result==LOSE){
+					srcRect = *spriteRect(2);
+				}
+				renderTexture(mTexture[1], &srcRect, NULL);
+		        //clear screen as black
+				SDL_RenderPresent( mRenderer );
+		        SDL_SetRenderDrawColor( mRenderer, 0x00, 0x00, 0x00, 0xFF );
+			    SDL_RenderClear( mRenderer );
+			    
+		        while( SDL_PollEvent( &e ) != 0 ) {
+		            //User requests quit
+		            if( e.type == SDL_QUIT ) {
+		                quit = true;
+		            }
+					else if( e.type == SDL_KEYDOWN ) {
+		                if (e.key.keysym.sym == SDLK_SPACE){
+                			state = START;
+                			result = NONE;
+//                			SDL_DestroyTexture(mTexture);
+//                			mTexture = NULL;
+						}
+						else if(e.key.keysym.sym == SDLK_ESCAPE){
+							quit = true;
+						}
+		            }
+		    	}
+				break;
+		} 
+		
+	}
+}
+SDL_Rect* MainWin::spriteRect(int i){
+	SpriteRect[0].w=640;
+	SpriteRect[0].h=526;
+	SpriteRect[0].x=0;
+	SpriteRect[0].y=0;
+	SpriteRect[1].w=561;
+	SpriteRect[1].h=250;
+	SpriteRect[1].x=0;
+	SpriteRect[1].y=20;
+	SpriteRect[2].w=561;
+	SpriteRect[2].h=250;
+	SpriteRect[2].x=0;
+	SpriteRect[2].y=270;
+	return &SpriteRect[i];
 }
 
 void MainWin::drawBGFrame() {
@@ -157,38 +282,42 @@ void MainWin::drawBGFrame() {
 bool MainWin::handleKeyEvent(SDL_Event e) {
     bool quit = false;
     //key press
-    switch( e.key.keysym.sym )
-    {
-        case SDLK_UP:
-            onKeyUp(e);
-            break;
-        case SDLK_DOWN:
-            onKeyDown(e);
-            break;
-        case SDLK_LEFT:
-            onKeyLeft(e);
-            break;
-        case SDLK_RIGHT:
-            onKeyRight(e);
-            break;
-        case SDLK_SPACE:
-            onKeySpace();
-            break;
-        case SDLK_ESCAPE:
-            quit = true;
-            break;
-        default:
-            onKeyEmpty(e);
-            break;
-    }
+    if(e.type == SDL_KEYDOWN) {
+	    switch( e.key.keysym.sym )
+	    {
+	        case SDLK_UP:
+	            onKeyUp(e);
+	            break;
+	        case SDLK_DOWN:
+	            onKeyDown(e);
+	            break;
+	        case SDLK_LEFT:
+	            onKeyLeft(e);
+	            break;
+	        case SDLK_RIGHT:
+	            onKeyRight(e);
+	            break;
+	        case SDLK_SPACE:
+	            onKeySpace(e);
+	            break;
+	        case SDLK_ESCAPE:
+	            quit = true;
+	            break;
+	        default:
+	            break;
+	    }
+	}
     return quit;
 }
 
 //override following to define the game behaviors
-void MainWin::onRender(){
+bool MainWin::onRender(){
     printf("override onRender() to custom the rendering\n");
+    return false;
 }
-
+void MainWin::loadData(int) {
+	printf("override loadData() to custom the rendering\n");
+}
 void MainWin::onKeyDown(SDL_Event e) {
     printf("Undefined, need to override onKeyDown()\n");
 }
@@ -201,10 +330,7 @@ void MainWin::onKeyLeft(SDL_Event e){
 void MainWin::onKeyRight(SDL_Event e){
     printf("Undefined, need to override onKeyRight()\n");
 }
-void MainWin::onKeyEmpty(SDL_Event e){
-	printf("Undefined, need to override onKeyEmpty()\n");
-}
-void MainWin::onKeySpace(){
+void MainWin::onKeySpace(SDL_Event e){
     printf("Undefined, need to override onKeySpace()\n");
 }
 void MainWin::onKeyCustom(SDL_Event e){

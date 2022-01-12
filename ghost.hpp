@@ -14,24 +14,34 @@ public:
     // destructor
     ~Ghost();
     void render();
-    SDL_Rect spriteRect[2];
-    SDL_Rect spriteRect1[2];
-    SDL_Rect* SpriteRect();
-    void getplayerPos(int,int);
-    void handleEvent(int ,int );
-    vector< vector<int> > mazeMap;
-	void getmazeMap(vector< vector<int> >);
-	bool checkcollide(int,int,char);
+	void handleEvent(int ,int );
+	
 	int pos_x,pos_y;
 	int getW();
 	int getH();
-private:
+	
+	void getmazeMap(vector< vector<int> >);
+	void getplayerPos(int,int);
 
+private:
+	
+	
 	int v_x,v_y;
 	int frame;
 	int stop;
 	int left;
 	int player_x,player_y;
 	int seed,moverandom;
+	int ghost_v;
+	bool u , d , l , r;
+	vector< vector<int> > mazeMap;
+	
+	
+	SDL_Rect spriteRect[2];
+    SDL_Rect spriteRect1[2];
+    SDL_Rect* SpriteRect();
+    
+	bool checkcollide(int,int,char);
+	
 };
 #endif

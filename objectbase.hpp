@@ -1,7 +1,7 @@
 #ifndef objectbase_hpp
 #define objectbase_hpp
 
-#include <stdio.h>
+#include <cstdio>
 #include "mainwin.hpp"
 
 class ObjectBase{
@@ -11,15 +11,17 @@ public:
     
     // destructor
     ~ObjectBase();
-
-    MainWin* hWin;
+	MainWin* hWin;
+    SDL_Rect dstRect;
+	SDL_Rect srcRect;
+	double angle;
+	
     SDL_Texture* pTexture;
     bool flip;
-    double angle;
-    SDL_Rect dstRect;
-	SDL_Rect srcRect; 
+    
     bool loadTexture(char path[]);
     void renderTexture(SDL_Rect* dstRect, SDL_Rect* srcRect, double angle);
+
 	virtual void render();
 	
 };

@@ -6,37 +6,64 @@
 #include "mazemap.hpp"
 #include "player.hpp"
 #include "ghost.hpp"
+#include "weapon.hpp"
 #include<vector>
+#include<SDL2/SDL_mixer.h>
+extern Result result;
+
 class Game01: public MainWin {
 public:
     // constructor
     Game01(int width=SCREEN_WIDTH, int height=SCREEN_HEIGHT);
-    
+    int time[5];
+    int gameNum;
     // destructor
     ~Game01();
-    MazeMap* mapMaze;
+   
+   
+	MazeMap* mapMaze;
     Player* player;
-    Ghost* ghost;
-
+    Ghost** ghost;
+    Weapon* weapon;
+    
 private:
-    void loadData();
-    void onRender();
+	
+	void renderFont(int);
+    
+	bool onRender();
+	
+	void loadData(int);
     void onKeyDown(SDL_Event);
     void onKeyUp(SDL_Event);
     void onKeyLeft(SDL_Event);
     void onKeyRight(SDL_Event);
-    void onKeyEmpty(SDL_Event);
+    void onKeySpace(SDL_Event);
     
-    void getplayerPos(int ,int);
+    
+	void getplayerPos(int ,int , int);
     void getmazeMapP(vector< vector<int> >);
-	void getmazeMapG(vector< vector<int> >);
+	void getmazeMapG(vector< vector<int> > , int);
 	
-	bool killPlayer();
-	bool checkcollide();
 	int getWofplayer();
 	int getHofplayer();
-	int getWofghost();
-	int getHofghost();
+	int getWofghost(int);
+	int getHofghost(int);
+	int getHofWeapon();
+	int getWofWeapon();
+	
+	bool killPlayer(int);
+	bool collideWithGhost(int);
+	
+	bool timeChange;
+	int howManyGhosts;
+	
+	Mix_Chunk *splash;
+	Mix_Chunk *bomb;
+	Mix_Chunk *lose;
+	Mix_Chunk *win;
+	Mix_Chunk *pointup;
+	Mix_Chunk *pointdown;
+
 };
 
 #endif

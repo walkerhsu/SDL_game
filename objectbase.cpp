@@ -11,8 +11,8 @@ hWin(handle){
 }
 
 ObjectBase::~ObjectBase(){
-	hWin = NULL;
-	pTexture = NULL;
+	delete hWin;
+	delete pTexture;
 }
 
 bool ObjectBase::loadTexture(char path[]) {

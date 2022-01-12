@@ -4,8 +4,8 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = main.o mainwin.o mazemap.o player.o ghost.o game01.o objectbase.o
-LINKOBJ  = main.o mainwin.o mazemap.o player.o ghost.o game01.o objectbase.o
+OBJ      = main.o mainwin.o mazemap.o player.o ghost.o game01.o objectbase.o weapon.o
+LINKOBJ  = main.o mainwin.o mazemap.o player.o ghost.o game01.o objectbase.o weapon.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -L"SDL2-2.0.18/x86_64-w64-mingw32/lib" -L"SDL_bgi-2.5.0/bin/Mingw64" -L"SDL2_image-2.0.5/x86_64-w64-mingw32/lib" -L"SDL2_mixer-2.0.4/x86_64-w64-mingw32/lib" -L"SDL2_ttf-2.0.15/x86_64-w64-mingw32/lib" -lmingw32 -L/mingw64/bin -lSDL_bgi -lSDL2_ttf -lSDL2_mixer -lSDL2_image -lSDL2main -lSDL2
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"SDL2-2.0.18/x86_64-w64-mingw32/include" -I"SDL2-2.0.18/x86_64-w64-mingw32/include/SDL2" -I"SDL_bgi-2.5.0/src" -I"SDL2_image-2.0.5/x86_64-w64-mingw32/include" -I"SDL2_mixer-2.0.4/x86_64-w64-mingw32/include" -I"SDL2_ttf-2.0.15/x86_64-w64-mingw32/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"SDL2-2.0.18/x86_64-w64-mingw32/include" -I"SDL2-2.0.18/x86_64-w64-mingw32/include/SDL2" -I"SDL_bgi-2.5.0/src" -I"SDL2_image-2.0.5/x86_64-w64-mingw32/include" -I"SDL2_mixer-2.0.4/x86_64-w64-mingw32/include" -I"SDL2_ttf-2.0.15/x86_64-w64-mingw32/include"
@@ -44,3 +44,6 @@ game01.o: game01.cpp
 
 objectbase.o: objectbase.cpp
 	$(CPP) -c objectbase.cpp -o objectbase.o $(CXXFLAGS)
+
+weapon.o: weapon.cpp
+	$(CPP) -c weapon.cpp -o weapon.o $(CXXFLAGS)
