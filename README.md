@@ -29,4 +29,11 @@ However , there will be times limits to each stage, makeing the game more exciti
 
 Once you get touched by the ghost or the time is up, you lose the game.
 
+------------------------------------------------------------------------------------------------------------------------------------------------
 
+#photos
+
+![game photo -2](https://user-images.githubusercontent.com/83209083/149114466-4c5a1145-7c63-4838-8a64-e347d18dc517.PNG)
+![game photo-1](https://user-images.githubusercontent.com/83209083/149114528-3c3d129d-44b9-40c9-b5cf-0874e4e6c2bf.PNG)
+![game photo -0](https://user-images.githubusercontent.com/83209083/149114772-219ba254-0c1a-4f9d-bb67-d4505663c1d8.jpg)
+)
